@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+seed.py - Set up MySQL database and populate with sample data
+"""
 import mysql.connector
 from mysql.connector import Error
 import uuid

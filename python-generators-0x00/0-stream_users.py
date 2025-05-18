@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 0-stream_users.py - Generator that streams rows from an SQL database one by one
 """
