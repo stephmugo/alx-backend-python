@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ad5xf*2p(_@%2^@y06jb%3k%lldi41c#_-63&naw4etg)=lf0#'
+SECRET_KEY = 'django-insecure-r)t6mp(vju07pmo(58rybro)8^(^8g23ire^0q(+nu%ay_l6nk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,8 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'rest_framework',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'chats',
 ]
 
 MIDDLEWARE = [
@@ -123,12 +124,10 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
     ],
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
-
-AUTH_USER_MODEL = 'chats.CustomUser'
