@@ -16,9 +16,14 @@ class User(AbstractUser):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     
+    # Explicitly include the required fields from AbstractUser
+    password = models.CharField(max_length=128)
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    
     # Use email as the username field
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
 class Conversation(models.Model):
     """
