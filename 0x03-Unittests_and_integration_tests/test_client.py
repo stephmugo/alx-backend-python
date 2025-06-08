@@ -37,6 +37,7 @@ class TestGithubOrgClient(TestCase):
         ("case_google", "google", {"login": "google", "id": 1}),
         ("case_abc", "abc", {"login": "abc", "id": 2})
     ])
+    
     @patch("client.get_json")  # Mock the get_json function to avoid real API calls
     def test_org(self, _, org_name, expected_response, mock_get_json):
         """Test that GithubOrgClient.org returns the expected org data."""

@@ -96,3 +96,4 @@ class TestMemoize(unittest.TestCase):
 # Standard Python idiom to run tests when script is executed directly
 if __name__ == "__main__":
     unittest.main()
+    
