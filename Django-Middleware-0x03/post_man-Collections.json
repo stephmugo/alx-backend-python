@@ -1,0 +1,892 @@
+{
+    "info": {
+      "name": "Messaging App API",
+      "description": "Complete API testing collection for Django messaging app with JWT authentication",
+      "version": "1.0.0",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": [
+        {
+          "key": "token",
+          "value": "{{access_token}}",
+          "type": "string"
+        }
+      ]
+    },
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:8000/api",
+        "type": "string"
+      },
+      {
+        "key": "access_token",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "refresh_token",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "user_id",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "conversation_id",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "message_id",
+        "value": "",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "Authentication",
+        "item": [
+          {
+            "name": "Register User 1",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 201) {",
+                    "    const response = pm.response.json();",
+                    "    pm.environment.set('access_token', response.tokens.access);",
+                    "    pm.environment.set('refresh_token', response.tokens.refresh);",
+                    "    pm.environment.set('user_id', response.user.id);",
+                    "    pm.test('User registered successfully', () => {",
+                    "        pm.expect(response.message).to.include('registered successfully');",
+                    "    });",
+                    "} else {",
+                    "    pm.test('Registration failed', () => {",
+                    "        pm.expect(pm.response.code).to.be.oneOf([201]);",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"testuser1\",\n    \"email\": \"testuser1@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"password_confirm\": \"SecurePass123!\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User One\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/auth/register/",
+                "host": ["{{base_url}}"],
+                "path": ["auth", "register", ""]
+              }
+            }
+          },
+          {
+            "name": "Register User 2",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"testuser2\",\n    \"email\": \"testuser2@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"password_confirm\": \"SecurePass123!\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User Two\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/auth/register/",
+                "host": ["{{base_url}}"],
+                "path": ["auth", "register", ""]
+              }
+            }
+          },
+          {
+            "name": "Register User 3 (Unauthorized)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"testuser3\",\n    \"email\": \"testuser3@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"password_confirm\": \"SecurePass123!\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User Three\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/auth/register/",
+                "host": ["{{base_url}}"],
+                "path": ["auth", "register", ""]
+              }
+            }
+          },
+          {
+            "name": "Login User 1",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 200) {",
+                    "    const response = pm.response.json();",
+                    "    pm.environment.set('access_token', response.access);",
+                    "    pm.environment.set('refresh_token', response.refresh);",
+                    "    pm.environment.set('user_id', response.user.id);",
+                    "    pm.test('Login successful', () => {",
+                    "        pm.expect(response.access).to.be.a('string');",
+                    "        pm.expect(response.refresh).to.be.a('string');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"testuser1\",\n    \"password\": \"SecurePass123!\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/auth/login/",
+                "host": ["{{base_url}}"],
+                "path": ["auth", "login", ""]
+              }
+            }
+          },
+          {
+            "name": "Get User Profile",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Profile retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response.user).to.have.property('username');",
+                    "    pm.expect(response.user).to.have.property('email');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/auth/profile/",
+                "host": ["{{base_url}}"],
+                "path": ["auth", "profile", ""]
+              }
+            }
+          },
+          {
+            "name": "Refresh Token",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 200) {",
+                    "    const response = pm.response.json();",
+                    "    pm.environment.set('access_token', response.access);",
+                    "    pm.test('Token refreshed successfully', () => {",
+                    "        pm.expect(response.access).to.be.a('string');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/auth/token/refresh/",
+                "host": ["{{base_url}}"],
+                "path": ["auth", "token", "refresh", ""]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Conversations",
+        "item": [
+          {
+            "name": "Create Conversation",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 201) {",
+                    "    const response = pm.response.json();",
+                    "    pm.environment.set('conversation_id', response.id);",
+                    "    pm.test('Conversation created successfully', () => {",
+                    "        pm.expect(response).to.have.property('id');",
+                    "        pm.expect(response).to.have.property('title');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"title\": \"Test Conversation\",\n    \"description\": \"A test conversation for API testing\",\n    \"is_group\": true\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/chats/conversations/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "conversations", ""]
+              }
+            }
+          },
+          {
+            "name": "Get All Conversations",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Conversations retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('results');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/conversations/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "conversations", ""]
+              }
+            }
+          },
+          {
+            "name": "Get Specific Conversation",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Conversation retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('id');",
+                    "    pm.expect(response.id).to.equal(parseInt(pm.environment.get('conversation_id')));",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/conversations/{{conversation_id}}/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "conversations", "{{conversation_id}}", ""]
+              }
+            }
+          },
+          {
+            "name": "Add Participant to Conversation",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Participant added successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response.message).to.include('added to conversation');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"testuser2\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/chats/conversations/{{conversation_id}}/add_participant/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "conversations", "{{conversation_id}}", "add_participant", ""]
+              }
+            }
+          },
+          {
+            "name": "Get Conversation Messages",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Messages retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('conversation_id');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/conversations/{{conversation_id}}/messages/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "conversations", "{{conversation_id}}", "messages", ""]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Messages",
+        "item": [
+          {
+            "name": "Send Message to Conversation",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 201) {",
+                    "    const response = pm.response.json();",
+                    "    pm.environment.set('message_id', response.id);",
+                    "    pm.test('Message sent successfully', () => {",
+                    "        pm.expect(response).to.have.property('id');",
+                    "        pm.expect(response).to.have.property('content');",
+                    "        pm.expect(response.content).to.equal('Hello, this is a test message!');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"content\": \"Hello, this is a test message!\",\n    \"conversation\": {{conversation_id}},\n    \"message_type\": \"text\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/chats/messages/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", ""]
+              }
+            }
+          },
+          {
+            "name": "Get All Messages",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Messages retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('results');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/messages/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", ""]
+              }
+            }
+          },
+          {
+            "name": "Get Specific Message",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Message retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('id');",
+                    "    pm.expect(response.id).to.equal(parseInt(pm.environment.get('message_id')));",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/messages/{{message_id}}/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", "{{message_id}}", ""]
+              }
+            }
+          },
+          {
+            "name": "Update Own Message",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Message updated successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response.content).to.equal('Hello, this is an updated test message!');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"content\": \"Hello, this is an updated test message!\",\n    \"conversation\": {{conversation_id}},\n    \"message_type\": \"text\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/chats/messages/{{message_id}}/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", "{{message_id}}", ""]
+              }
+            }
+          },
+          {
+            "name": "Mark Message as Read",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Message marked as read', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response.message).to.equal('Message marked as read');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/messages/{{message_id}}/mark_as_read/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", "{{message_id}}", "mark_as_read", ""]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Direct Messages",
+        "item": [
+          {
+            "name": "Send Direct Message",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 201) {",
+                    "    const response = pm.response.json();",
+                    "    pm.test('Direct message sent successfully', () => {",
+                    "        pm.expect(response).to.have.property('id');",
+                    "        pm.expect(response).to.have.property('content');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"content\": \"Hello! This is a direct message.\",\n    \"recipient_username\": \"testuser2\",\n    \"message_type\": \"text\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/chats/direct-messages/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "direct-messages", ""]
+              }
+            }
+          },
+          {
+            "name": "Get Direct Message Conversations",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('DM conversations retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('conversation_partners');",
+                    "    pm.expect(response).to.have.property('count');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/direct-messages/conversations/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "direct-messages", "conversations", ""]
+              }
+            }
+          },
+          {
+            "name": "Get Messages with Specific User",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Messages with user retrieved successfully', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('conversation_with');",
+                    "    pm.expect(response.conversation_with).to.equal('testuser2');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/direct-messages/with_user/?username=testuser2",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "direct-messages", "with_user", ""],
+                "query": [
+                  {
+                    "key": "username",
+                    "value": "testuser2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "User Search",
+        "item": [
+          {
+            "name": "Search Users",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('User search successful', () => {",
+                    "    pm.expect(pm.response.code).to.equal(200);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('users');",
+                    "    pm.expect(response).to.have.property('count');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{access_token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/users/search/?q=test",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "users", "search", ""],
+                "query": [
+                  {
+                    "key": "q",
+                    "value": "test"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Unauthorized Access Tests",
+        "item": [
+          {
+            "name": "Access Conversations Without Token",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Unauthorized access denied', () => {",
+                    "    pm.expect(pm.response.code).to.equal(401);",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('detail');",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/chats/conversations/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "conversations", ""]
+              }
+            }
+          },
+          {
+            "name": "Access Messages Without Token",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Unauthorized access denied', () => {",
+                    "    pm.expect(pm.response.code).to.equal(401);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/chats/messages/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", ""]
+              }
+            }
+          },
+          {
+            "name": "Try to Access Other User's Message",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Access to other users message denied', () => {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer INVALID_TOKEN_FOR_USER3"
+                }
+              ],
+              "url": {
+                "raw": "{{base_url}}/chats/messages/{{message_id}}/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", "{{message_id}}", ""]
+              }
+            }
+          },
+          {
+            "name": "Try to Edit Other User's Message",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test('Editing other users message denied', () => {",
+                    "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                    "});"
+                  ]
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer INVALID_TOKEN_FOR_USER3"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"content\": \"Trying to hack this message!\",\n    \"conversation\": {{conversation_id}},\n    \"message_type\": \"text\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/chats/messages/{{message_id}}/",
+                "host": ["{{base_url}}"],
+                "path": ["chats", "messages", "{{message_id}}", ""]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
