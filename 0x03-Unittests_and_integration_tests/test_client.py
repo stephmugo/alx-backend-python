@@ -37,20 +37,19 @@ class TestGithubOrgClient(TestCase):
         ("case_google", "google", {"login": "google", "id": 1}),
         ("case_abc", "abc", {"login": "abc", "id": 2})
     ])
-    
-    @patch("client.get_json")  # Mock the get_json function to avoid real API calls
+    @patch("client.get_json")  # Mock get_json function to avoid real API calls
     def test_org(self, _, org_name, expected_response, mock_get_json):
         """Test that GithubOrgClient.org returns the expected org data."""
         # Configure the mock to return our test data
         mock_get_json.return_value = expected_response
-        
+
         # Create client instance and call the method under test
         client = GithubOrgClient(org_name)
         self.assertEqual(client.org(), expected_response)
-        
+
         # Verify get_json was called with the correct GitHub API URL
         mock_get_json.assert_called_once_with(
-            f"https://api.github.com/orgs/{org_name}"
+            f"https: //api.github.com/orgs/{org_name}"
         )
 
     @patch("client.get_json")  # Mock get_json to control API response
@@ -63,7 +62,7 @@ class TestGithubOrgClient(TestCase):
             {"name": "repo3"}
         ]
 
-        # Mock the _public_repos_url property to avoid dependency on org() method
+        # Mock _public_repos_url property to avoid dependency on org() method
         with patch.object(
             GithubOrgClient,
             "_public_repos_url",
@@ -71,11 +70,11 @@ class TestGithubOrgClient(TestCase):
         ) as mock_url:
             # Set the mocked property to return a test URL
             mock_url.return_value = "https://api.github.com/orgs/testorg/repos"
-            
+
             # Create client and test the public_repos method
             client = GithubOrgClient("testorg")
             result = client.public_repos()
-            
+
             # Verify the method returns only repository names
             self.assertEqual(result, ["repo1", "repo2", "repo3"])
             # Verify get_json was called with the repos URL
@@ -92,9 +91,10 @@ class TestGithubOrgClient(TestCase):
             True                                 # expected result (match)
         ),
         (
-            {"license": {"key": "other_license"}},  # repo with different license
-            "my_license",                           # license_key to check
-            False                                   # expected result (no match)
+            {"license": {"key": "other_license"}},
+            # repo with different license
+            "my_license",                        # license_key to check
+            False                                # expected result (no match)
         )
     ])
     def test_has_license(self, repo, license_key, expected):
@@ -106,17 +106,20 @@ class TestGithubOrgClient(TestCase):
 @parameterized_class([{
     # Inject test data as class attributes for integration tests
     "org_payload": org_payload,
-    "repos_payload": repos_payload, 
+    "repos_payload": repos_payload,
     "expected_repos": expected_repos,
     "apache2_repos": apache2_repos
 }])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration tests for GithubOrgClient.public_repos with real HTTP mocking."""
+    """Integration tests"""
+    """for GithubOrgClient.public_repos with real HTTP mocking."""
 
     @classmethod
     def setUpClass(cls):
-        """Set up class-level mocks that persist across all test methods."""
-        # Start patching requests.get at the module level for integration testing
+        """Set up class-level mocks """
+        """that persist across all test methods."""
+        # Start patching requests.get
+        # at the module level for integration testing
         cls.get_patcher = patch('client.requests.get')
         mock_get = cls.get_patcher.start()
 
@@ -145,7 +148,8 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test that public_repos returns expected repos in integration scenario."""
+        """Test that public_repos"""
+        """returns expected repos in integration scenario."""
         client = GithubOrgClient("google")
         # Test the full flow: org() -> _public_repos_url -> public_repos()
         self.assertEqual(client.public_repos(), self.expected_repos)
