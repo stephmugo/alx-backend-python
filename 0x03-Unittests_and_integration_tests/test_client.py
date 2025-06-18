@@ -7,7 +7,6 @@ from unittest.mock import patch, PropertyMock
 from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 
-# Inline fixtures here as ALX expects everything in one file
 # Test data representing a GitHub organization's API response
 org_payload = {
     "login": "google",
@@ -49,7 +48,7 @@ class TestGithubOrgClient(TestCase):
 
         # Verify get_json was called with the correct GitHub API URL
         mock_get_json.assert_called_once_with(
-            f"https: //api.github.com/orgs/{org_name}"
+            f"https://api.github.com/orgs/{org_name}"
         )
 
     @patch("client.get_json")  # Mock get_json to control API response
