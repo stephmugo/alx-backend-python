@@ -1,8 +1,9 @@
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets, status, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import User, Conversation, Message
 from .permissions import IsParticipantOfConversation
 
@@ -12,6 +13,13 @@ class ConversationViewSet(viewsets.ModelViewSet):
     """
     # serializer_class = ConversationSerializer  # You'll create this
     permission_classes = [IsParticipantOfConversation]
+    
+    # Add filtering backends
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['participants', 'created_at']
+    search_fields = ['participants__username', 'participants__first_name', 'participants__last_name']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-updated_at']  # Default ordering
     
     def get_queryset(self):
         """
@@ -135,6 +143,13 @@ class MessageViewSet(viewsets.ModelViewSet):
     """
     # serializer_class = MessageSerializer  # You'll create this
     permission_classes = [IsParticipantOfConversation]
+    
+    # Add filtering backends
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['conversation', 'sender', 'is_read', 'created_at']
+    search_fields = ['content', 'sender__username']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']  # Default ordering
     
     def get_queryset(self):
         """
