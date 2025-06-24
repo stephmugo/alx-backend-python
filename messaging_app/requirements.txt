@@ -1,5 +1,0 @@
-Django>=4.2.0
-djangorestframework>=3.14.0
-django-filter>=23.0.0
-drf-nested-routers>=0.93.4
-djangorestframework-simplejwt==5.3.0
