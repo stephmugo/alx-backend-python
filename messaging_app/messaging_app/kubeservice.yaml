@@ -5,7 +5,7 @@ metadata:
 spec:
   selector:
     app: messaging
-    version: blue  # 👈 Starts with blue
+    version: blue  # Starts with blue
   ports:
   - port: 8000
     targetPort: 8000
