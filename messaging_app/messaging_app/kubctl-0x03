@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e
+
+echo "🚀 Applying rolling update to blue deployment..."
+kubectl apply -f messaging_app/blue_deployment.yaml
+
+echo "📈 Monitoring rollout status..."
+kubectl rollout status deployment/messaging-blue
+
+echo "🌐 Verifying live traffic with curl..."
+
+# Port-forward to access the service locally
+kubectl port-forward svc/messaging-service 8000:8000 &
+PORT_FORWARD_PID=$!
+
+# Allow some time for port-forward to start
+sleep 2
+
+# Simulate requests during rollout
+for i in {1..10}; do
+  echo -n "Request $i: "
+  curl -s http://localhost:8000 || echo "❌ Failed"
+  sleep 1
+done
+
+# Clean up background port-forward
+kill $PORT_FORWARD_PID
+
+echo "✅ Rolling update test complete."
+
+echo "📦 Current running pods:"
+kubectl get pods -l app=messaging

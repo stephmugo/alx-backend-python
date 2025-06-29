@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Exit immediately on error
+set -e
+
+echo "📦 Scaling messaging-app deployment to 3 replicas..."
+kubectl scale deployment messaging-app --replicas=3
+
+echo "✅ Deployment scaled."
+
+echo "🔍 Verifying running pods..."
+kubectl get pods -l app=messaging-app
+
+echo "🔁 Performing load test using wrk..."
+wrk -t2 -c10 -d10s http://localhost:8000
+
+echo "📊 Monitoring resource usage..."
+kubectl top pods

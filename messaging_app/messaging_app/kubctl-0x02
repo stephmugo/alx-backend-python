@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+echo "🚀 Deploying blue and green deployments..."
+kubectl apply -f messaging_app/blue_deployment.yaml
+kubectl apply -f messaging_app/green_deployment.yaml
+kubectl apply -f messaging_app/kubeservice.yaml
+
+echo "📦 Checking running pods:"
+kubectl get pods -l app=messaging
+
+echo "📋 Checking logs of green deployment:"
+GREEN_POD=$(kubectl get pods -l version=green -o jsonpath="{.items[0].metadata.name}")
+kubectl logs "$GREEN_POD"
