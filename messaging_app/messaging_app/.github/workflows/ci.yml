@@ -1,6 +1,4 @@
-# messaging_app/.github/workflows/ci.yml
-
-name: Django CI with MySQL
+name: Django CI with Linting and Coverage
 
 on:
   push:
@@ -13,6 +11,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     services:
       mysql:
         image: mysql:5.7
@@ -46,6 +45,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install flake8 coverage
 
       - name: Wait for MySQL to be ready
         run: |
@@ -55,12 +55,26 @@ jobs:
             echo "Waiting for MySQL..." && sleep 3
           done
 
+      - name: Run flake8 lint checks
+        working-directory: messaging_app
+        run: |
+          echo "Running flake8 linting..."
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
       - name: Run migrations
         working-directory: messaging_app
-        run: |
-          python manage.py migrate
+        run: python manage.py migrate
 
-      - name: Run Django tests
+      - name: Run Django tests with coverage
         working-directory: messaging_app
         run: |
-          python manage.py pytest
+          coverage run manage.py test
+          coverage report
+          coverage html
+
+      - name: Upload coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-coverage-report
+          path: messaging_app/htmlcov/
