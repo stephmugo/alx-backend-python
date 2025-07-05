@@ -1,0 +1,23 @@
+pipeline {
+    agent { 
+        node {
+            label 'docker-agent-messaging-app'
+            }
+      }
+    stages {
+        stage('Clone Repository') {
+            steps {
+
+                git credentialsId: 'github-creds',
+                    url: 'https://github.com/stephmugo/alx-backend-python.git',
+                    branch: 'main'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install -r messaging_app/requirements.txt'
+            }
+        }
+    }
+}
