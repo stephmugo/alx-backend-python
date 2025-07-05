@@ -1,22 +1,40 @@
 pipeline {
-    agent { 
-        node {
-            label 'docker-agent-messaging-app'
-            }
-      }
-    stages {
-        stage('Clone Repository') {
-            steps {
+    agent {
+        label 'python-agent'  // Docker-based Jenkins agent
+    }
 
-                git credentialsId: 'github-creds',
-                    url: 'https://github.com/stephmugo/alx-backend-python.git',
-                    branch: 'main'
+    environment {
+        GIT_BRANCH = 'main'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                echo 'Checking out code...'
+                git branch: "${GIT_BRANCH}", 
+                    credentialsId: 'github-creds', 
+                    url: 'https://github.com/your-username/alx-backend-python.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo 'Installing dependencies...'
                 sh 'pip install -r messaging_app/requirements.txt'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                sh 'pytest messaging_app/tests/ --junitxml=report.xml'
+            }
+        }
+
+        stage('Publish Test Report') {
+            steps {
+                echo 'Publishing test report...'
+                junit 'report.xml'
             }
         }
     }
